@@ -1,8 +1,5 @@
 import os.path
-from PyQt5.QtSql import *
-# import sqlite3
-# from PyQt5.QtCore import QDate
-# from PyQt5.QtWidgets import QTableWidgetItem
+from PyQt5.QtSql import QSqlTableModel, QSqlDatabase
 from kalendar import *
 from db import *
 import sys
@@ -62,29 +59,31 @@ def read_from_file():
 
 #БАЗА ДАННЫХ
 
-db_name = 'bday.db'
+# db_manager = DatabaseManager()
+# db_manager.create_tables()
+# db_manager.create_tables_1()
 
-def connect_db(db_name):
-    db = QSqlDatabase.addDatabase('QSQLITE')
-    db.setDatabaseName(db_name)
-    if not db.open():
-        print("Не удалось подключиться")
-        return False
-    return db
+# def connect_db(db_manager):
+#     db = db_manager.db
+#     if not db.open():
+#         print("Не удалось подключиться")
+#         return False
+#     return db
+#
+# if not connect_db():
+#     sys.exit(-1)
+# else:
+#     print("Успешное подключение")
+#
+# model_birthdays = QSqlTableModel()
+# model_birthdays.setTable('birthdays')
+# model_birthdays.select()
+#
+# model_events = QSqlTableModel()
+# model_events.setTable('events')
+# model_events.select()
 
-if not connect_db(db_name):
-    sys.exit(-1)
-else:
-    print("Успешное подключение")
-
-Table_one = QSqlTableModel()
-Table_one.setTable('birthdays')
-Table_one.select()
-
-Table_two = QSqlTableModel()
-Table_two.setTable('events')
-Table_two.select()
-conn.commit()
+# db_manager.commit_connection()
 
 
 
@@ -96,8 +95,10 @@ def on_click():
     time_date = ui.calendarWidget.selectedDate()
     description = ui.plainTextEdit.toPlainText()
     description_1 = ui.plainTextEdit_3.toPlainText()
+
     people = [(description,description_1,time_date.toString('dd-MM-yyyy'))]
-    add_birthday(people)
+    db_manager.add_birthday(people)
+    model_birthdays.select()
 
     # print(ui.plainTextEdit.toPlainText())
     # print(ui.dateEdit.dateTime().toString('dd-MM-yyyy'))
@@ -134,8 +135,8 @@ ui.pushButton_2.clicked.connect(on_click) #кнопка отследить
 ui.calendarWidget.clicked.connect(on_click_calendar)
 ui.dateEdit.dateChanged.connect(on_dateedit_change)
 
-ui.tablebase.setModel(Table_one)
-ui.tablebase_2.setModel(Table_two)
+# ui.tablebase.setModel(model_birthdays)
+# ui.tablebase_2.setModel(model_events)
 
 start_date = ui.calendarWidget.selectedDate()
 now_date = ui.calendarWidget.selectedDate()
