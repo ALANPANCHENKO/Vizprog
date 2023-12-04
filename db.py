@@ -12,7 +12,8 @@ class DatabaseManager:
                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
                 secname TEXT,
-                birthday DATE)
+                birthday DATE,
+                left INTEGER)
         """)
 
     def create_tables_1(self):
@@ -20,9 +21,9 @@ class DatabaseManager:
         self.cur.execute('''
             CREATE TABLE IF NOT EXISTS events 
                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Событие TEXT,
-                Дата DATE,
-                Дней_осталось INTEGER
+                Name TEXT,
+                date DATE,
+                left INTEGER
             )
         ''')
 
@@ -30,15 +31,25 @@ class DatabaseManager:
 
     def add_birthday(self, data):
         # Вставка данных в базу данных
-        self.cur.executemany("INSERT INTO birthdays (name, secname, birthday) VALUES (?, ?, ?)", data)
+        self.cur.executemany("INSERT INTO birthdays (name, secname, birthday, left) VALUES (?, ?, ?, ?)", data)
         self.conn.commit()
 
     def fetch_data_from_database(self):
         try:
-            self.cur.execute('SELECT * FROM birthdays')
+            self.cur.execute('SELECT name, secname, birthday, Left bi FROM birthdays')
             data = self.cur.fetchall()
 
             return data
+
+        except sqlite3.Error as error:
+            print(f"Error while fetching data from the database: {error}")
+
+    def fetch_data_from_database_1(self):
+        try:
+            self.cur.execute('SELECT name, date, left bi FROM events')
+            data1 = self.cur.fetchall()
+
+            return data1
 
         except sqlite3.Error as error:
             print(f"Error while fetching data from the database: {error}")

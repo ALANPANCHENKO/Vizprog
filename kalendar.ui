@@ -25,7 +25,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>651</width>
+      <width>671</width>
       <height>581</height>
      </rect>
     </property>
@@ -33,7 +33,7 @@
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_5">
      <attribute name="title">
@@ -152,6 +152,21 @@ border-radius: 10px;
       <property name="styleSheet">
        <string notr="true">background-color: rgb(240, 240, 240);</string>
       </property>
+      <column>
+       <property name="text">
+        <string>Название</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Дата</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Дней осталось</string>
+       </property>
+      </column>
      </widget>
     </widget>
     <widget class="QWidget" name="tab">

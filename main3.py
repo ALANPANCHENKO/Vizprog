@@ -19,7 +19,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Инициализация базы данных
         self.db_manager = DatabaseManager()
         self.db_manager.create_tables()
-
+        self.db_manager.create_tables_1()
         # Инициализация модели для таблицы birthdays
         self.model_birthdays = QSqlTableModel()
         self.model_birthdays.setTable('birthdays')
@@ -32,11 +32,15 @@ class MainWindow(QtWidgets.QMainWindow):
         # Подключение событий к методам
         self.ui.pushButton_2.clicked.connect(self.on_click)
         self.ui.pushButton_2.clicked.connect(self.populateTableFromDatabase1)
-        self.model_birthdays.select()
+        # self.model_birthdays.select()
+        # self.model_events.select()
         self.ui.calendarWidget.clicked.connect(self.on_click_calendar)
         self.ui.dateEdit.dateChanged.connect(self.on_dateedit_change)
-
         # Заполнение начальных значений
+        self.ui.tableWidget.setColumnWidth(0, 104)
+        self.ui.tableWidget_2.setColumnWidth(0, 135)
+        self.ui.tableWidget_2.setColumnWidth(1, 135)
+        self.ui.tableWidget_2.setColumnWidth(2, 134)
         self.start_date = self.ui.calendarWidget.selectedDate()
         self.now_date = self.ui.calendarWidget.selectedDate()
         self.time_date = self.ui.calendarWidget.selectedDate()
@@ -44,7 +48,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.description_1 = self.ui.plainTextEdit_3.toPlainText()
         self.read_from_file()
         self.populateTableFromDatabase1()
+        self.populateTableFromDatabase1_1()
         self.ui.label_4.setText("Сегодняшняя дата: %s " % self.now_date.toString('dd-MM-yyyy'))
+        self.ui.label_8.setText("Сегодняшняя дата: %s " % self.now_date.toString('dd-MM-yyyy'))
         self.on_click_calendar()
 
     def populateTableFromDatabase1(self):
@@ -58,6 +64,18 @@ class MainWindow(QtWidgets.QMainWindow):
                 for col_num, col_data in enumerate(row_data):
                     item = QTableWidgetItem(str(col_data))
                     self.ui.tableWidget.setItem(row_num, col_num, item)
+
+    def populateTableFromDatabase1_1(self):
+        data = self.db_manager.fetch_data_from_database_1()
+
+        if data:
+            self.ui.tableWidget_2.setRowCount(len(data))
+            self.ui.tableWidget_2.setColumnCount(len(data[0]))
+
+            for row_num, row_data in enumerate(data):
+                for col_num, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.ui.tableWidget_2.setItem(row_num, col_num, item)
 
     # def fill_tableWidget(self):
     #     self.ui.tableWidget.setModel(self.model_birthdays)
@@ -101,11 +119,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time_date = self.ui.calendarWidget.selectedDate()
         self.description = self.ui.plainTextEdit.toPlainText()
         self.description_1 = self.ui.plainTextEdit_3.toPlainText()
-
-        people = [(self.description, self.description_1, self.time_date.toString('dd-MM-yyyy'))]
+        self.left = self.start_date.daysTo(self.time_date)
+        people = [(self.description, self.description_1, self.time_date.toString('dd-MM-yyyy'), self.left)]
         self.db_manager.add_birthday(people)
-
-
         self.save_to_file()
 
     def on_click_calendar(self):
