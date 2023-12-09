@@ -33,7 +33,8 @@ class MainWindow(QMainWindow):
     def add_item(self):
         new_item_text = self.lineEdit.text()
         if new_item_text:
-            self.comboBox.addItem(new_item_text)
+            self.comboBox.insertItem(0, new_item_text)  # Вставляем новый элемент на первое место
+            self.comboBox.setCurrentIndex(0)  # Устанавливаем текущий индекс на новый элемент
             self.lineEdit.clear()
             self.save_items_to_settings()
 

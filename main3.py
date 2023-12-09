@@ -1,9 +1,9 @@
 import os.path
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QDate
 from PyQt5.QtSql import QSqlTableModel
-from PyQt5.QtWidgets import QTableWidgetItem
-
+from PyQt5.QtWidgets import QTableWidgetItem , QLabel, QFileDialog
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QSettings, Qt
 from kalendar import Ui_MainWindow
 from db import DatabaseManager
 import sys
@@ -13,6 +13,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.settings = QSettings("YourCompany", "YourApp")
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -32,6 +33,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # Подключение событий к методам
         self.ui.pushButton_2.clicked.connect(self.on_click)
         self.ui.pushButton_2.clicked.connect(self.populateTableFromDatabase1)
+        # Выпадающая панель
+        self.load_items_from_settings()
+        self.ui.pushButton_7.clicked.connect(self.add_item)
+        self.ui.pushButton_8.clicked.connect(self.clear_items)
+        #Загрузка картинки
+        self.ui.pushButton_6.clicked.connect(self.choose_image)
         # self.model_birthdays.select()
         # self.model_events.select()
         self.ui.calendarWidget.clicked.connect(self.on_click_calendar)
@@ -45,8 +52,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.now_date = self.ui.calendarWidget.selectedDate()
         self.time_date = self.ui.calendarWidget.selectedDate()
         self.description = self.ui.plainTextEdit.toPlainText()
-        self.description_1 = self.ui.plainTextEdit_3.toPlainText()
-        self.read_from_file()
+        # self.read_from_file()
         self.populateTableFromDatabase1()
         self.populateTableFromDatabase1_1()
         self.ui.label_4.setText("Сегодняшняя дата: %s " % self.now_date.toString('dd-MM-yyyy'))
@@ -104,7 +110,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.calendarWidget.setSelectedDate(self.time_date)
             self.ui.dateEdit.setDate(self.time_date)
             self.ui.plainTextEdit.setPlainText(self.description)
-            self.ui.plainTextEdit_3.setPlainText(self.description_1)
             delta_days_left = self.start_date.daysTo(self.now_date)  # прошло дней
             delta_days_right = self.now_date.daysTo(self.time_date)  # осталось дней
             days_total = self.start_date.daysTo(self.time_date)  # всего дней
@@ -118,11 +123,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.start_date = self.now_date
         self.time_date = self.ui.calendarWidget.selectedDate()
         self.description = self.ui.plainTextEdit.toPlainText()
-        self.description_1 = self.ui.plainTextEdit_3.toPlainText()
         self.left = self.start_date.daysTo(self.time_date)
         people = [(self.description, self.description_1, self.time_date.toString('dd-MM-yyyy'), self.left)]
         self.db_manager.add_birthday(people)
+
+        picture_label = QLabel()
+        pixmap = self.ui.label_6.pixmap()
+        if pixmap:
+            picture_label.setPixmap(pixmap)
+
+
         self.save_to_file()
+
+    def choose_image(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.ReadOnly
+        file_path, _ = QFileDialog.getOpenFileName(self, "Выбрать картинку", "",
+                                                   "Images (*.png *.xpm *.jpg *.bmp);;All Files (*)", options=options)
+        if file_path:
+            pixmap = QPixmap(file_path)
+            pixmap = pixmap.scaledToWidth(100,Qt.SmoothTransformation)  # Масштабируем изображение до 100 пикселей в ширину
+            self.ui.label_6.setPixmap(pixmap)
 
     def on_click_calendar(self):
         self.ui.dateEdit.setDate(self.ui.calendarWidget.selectedDate())
@@ -135,6 +156,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time_date = self.ui.dateEdit.date()
         delta_days = self.start_date.daysTo(self.time_date)
         self.ui.label_3.setText("До наступления события: %s дней" % delta_days)
+
+    #выпадающая панель
+    def add_item(self):
+        new_item_text = self.ui.lineEdit.text()
+        if new_item_text:
+            self.ui.comboBox.insertItem(0, new_item_text)
+            self.ui.comboBox.setCurrentIndex(0)
+            self.ui.lineEdit.clear()
+            self.save_items_to_settings()
+
+    def clear_items(self):
+        self.ui.comboBox.clear()
+        self.save_items_to_settings()
+
+    def load_items_from_settings(self):
+        items = self.settings.value("items", [])
+        self.ui.comboBox.addItems(items)
+
+    def save_items_to_settings(self):
+        items = [self.ui.comboBox.itemText(i) for i in range(self.ui.comboBox.count())]
+        self.settings.setValue("items", items)
 
 
 if __name__ == "__main__":
