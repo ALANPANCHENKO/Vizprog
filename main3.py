@@ -100,7 +100,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.description = data_to_load["desc"]
             self.description_1 = data_to_load["Secname"]
             print(self.start_date.toString('dd-MM-yyyy'), self.time_date.toString('dd-MM-yyyy'),
-                  self.description, self.description_1)
+                    self.description, self.description_1)
             self.ui.calendarWidget.setSelectedDate(self.time_date)
             self.ui.dateEdit.setDate(self.time_date)
             self.ui.plainTextEdit.setPlainText(self.description)

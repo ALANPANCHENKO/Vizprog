@@ -1,56 +1,57 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableView, QVBoxLayout, QWidget
-from PyQt5.QtSql import QSqlDatabase, QSqlQueryModel
-
-class DatabaseManager:
-    def __init__(self, db_name='bday.db'):
-        self.db = QSqlDatabase.addDatabase('QSQLITE')
-        self.db.setDatabaseName(db_name)
-        if not self.db.open():
-            print("Не удалось подключиться к базе данных")
-
-    def close_connection(self):
-        self.db.close()
+from PyQt5.QtWidgets import QApplication, QMainWindow, QComboBox, QVBoxLayout, QWidget, QPushButton, QLineEdit, QCompleter
+from PyQt5.QtCore import QSettings
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.db_manager = DatabaseManager()
-        self.init_ui()
+        self.settings = QSettings("YourCompany", "YourApp")  # Set your own values
 
-    def init_ui(self):
-        self.setGeometry(100, 100, 600, 400)
-        self.setWindowTitle('Пример работы с базой данных и таблицей')
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
 
-        # Создаем QSqlQueryModel
-        self.query_model = QSqlQueryModel()
+        self.layout = QVBoxLayout(self.central_widget)
 
-        # Устанавливаем запрос для выборки данных из таблицы birthdays
-        self.query_model.setQuery("SELECT * FROM birthdays")
+        self.comboBox = QComboBox()
+        self.load_items_from_settings()
+        self.layout.addWidget(self.comboBox)
 
-        # Создаем QTableView
-        self.table_view = QTableView()
-        self.table_view.setModel(self.query_model)
+        self.lineEdit = QLineEdit()
+        self.completer = QCompleter()
+        self.lineEdit.setCompleter(self.completer)
+        self.layout.addWidget(self.lineEdit)
 
-        # Создаем основной макет
-        layout = QVBoxLayout()
-        layout.addWidget(self.table_view)
+        self.addButton = QPushButton("Add Item")
+        self.addButton.clicked.connect(self.add_item)
+        self.layout.addWidget(self.addButton)
 
-        # Создаем виджет и устанавливаем основной макет
-        central_widget = QWidget()
-        central_widget.setLayout(layout)
+        self.clearButton = QPushButton("Clear List")
+        self.clearButton.clicked.connect(self.clear_items)
+        self.layout.addWidget(self.clearButton)
 
-        # Устанавливаем виджет в качестве центрального виджета главного окна
-        self.setCentralWidget(central_widget)
+    def add_item(self):
+        new_item_text = self.lineEdit.text()
+        if new_item_text:
+            self.comboBox.addItem(new_item_text)
+            self.lineEdit.clear()
+            self.save_items_to_settings()
 
-    def closeEvent(self, event):
-        # Закрываем соединение с базой данных при закрытии главного окна
-        self.db_manager.close_connection()
-        event.accept()
+    def clear_items(self):
+        self.comboBox.clear()
+        self.save_items_to_settings()
 
-if __name__ == '__main__':
+    def load_items_from_settings(self):
+        items = self.settings.value("items", [])
+        self.comboBox.addItems(items)
+
+    def save_items_to_settings(self):
+        items = [self.comboBox.itemText(i) for i in range(self.comboBox.count())]
+        self.settings.setValue("items", items)
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
+    window.setGeometry(100, 100, 300, 200)
     window.show()
     sys.exit(app.exec_())

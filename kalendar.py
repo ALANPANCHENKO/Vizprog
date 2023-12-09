@@ -15,10 +15,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
-        # MainWindow.resize(668, 574)
-
-        MainWindow.setFixedSize(645, 575)
-
+        MainWindow.resize(669, 581)
         MainWindow.setStyleSheet("background-color: rgb(205, 205, 205);")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -138,7 +135,6 @@ class Ui_MainWindow(object):
         self.tableWidget.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(4)
-
         self.tableWidget.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(0, item)
@@ -152,7 +148,7 @@ class Ui_MainWindow(object):
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
         self.calendarWidget = QtWidgets.QCalendarWidget(self.tab_2)
-        self.calendarWidget.setGeometry(QtCore.QRect(10, 10, 621, 241))
+        self.calendarWidget.setGeometry(QtCore.QRect(10, 10, 641, 241))
         self.calendarWidget.setStyleSheet("alternate-background-color: rgb(178, 184, 176);\n"
 "background-color: rgb(205, 205, 205);\n"
 "")
@@ -168,24 +164,6 @@ class Ui_MainWindow(object):
         self.label_2.setFont(font)
         self.label_2.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.label_2.setObjectName("label_2")
-        self.pushButton_2 = QtWidgets.QPushButton(self.tab_2)
-        self.pushButton_2.setGeometry(QtCore.QRect(100, 310, 151, 51))
-        font = QtGui.QFont()
-        font.setPointSize(15)
-        self.pushButton_2.setFont(font)
-        self.pushButton_2.setStyleSheet("border-radius: 10px;\n"
-"background-color: rgb(240, 240, 240);")
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.dateEdit = QtWidgets.QDateEdit(self.tab_2)
-        self.dateEdit.setGeometry(QtCore.QRect(100, 370, 151, 41))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setBold(True)
-        font.setWeight(75)
-        self.dateEdit.setFont(font)
-        self.dateEdit.setStyleSheet("background-color: rgb(240, 240, 240);\n"
-"border-radius: 10px;")
-        self.dateEdit.setObjectName("dateEdit")
         self.label_3 = QtWidgets.QLabel(self.tab_2)
         self.label_3.setGeometry(QtCore.QRect(110, 480, 461, 31))
         font = QtGui.QFont()
@@ -222,11 +200,40 @@ class Ui_MainWindow(object):
         self.plainTextEdit_2.setGeometry(QtCore.QRect(10, 10, 361, 111))
         self.plainTextEdit_2.setObjectName("plainTextEdit_2")
         self.tabWidget_2.addTab(self.tab_4, "")
+        self.widget = QtWidgets.QWidget(self.tab_2)
+        self.widget.setGeometry(QtCore.QRect(30, 310, 218, 161))
+        self.widget.setObjectName("widget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.widget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.pushButton_2 = QtWidgets.QPushButton(self.widget)
+        self.pushButton_2.setEnabled(True)
+        font = QtGui.QFont()
+        font.setPointSize(15)
+        self.pushButton_2.setFont(font)
+        self.pushButton_2.setStyleSheet("border-radius: 10px;\n"
+"background-color: rgb(240, 240, 240);\n"
+"height: 50 px;")
+        self.pushButton_2.setAutoDefault(False)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.verticalLayout.addWidget(self.pushButton_2)
+        self.dateEdit = QtWidgets.QDateEdit(self.widget)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.dateEdit.setFont(font)
+        self.dateEdit.setStyleSheet("background-color: rgb(240, 240, 240);\n"
+"border-radius: 10px;\n"
+"width: 200px;\n"
+"height: 50 px;")
+        self.dateEdit.setObjectName("dateEdit")
+        self.verticalLayout.addWidget(self.dateEdit)
         self.tabWidget.addTab(self.tab_2, "")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         self.tabWidget_2.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -238,7 +245,7 @@ class Ui_MainWindow(object):
         self.pushButton_4.setText(_translate("MainWindow", "Добавить "))
         self.pushButton_5.setText(_translate("MainWindow", "Удалить"))
         item = self.tableWidget_2.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "Событие"))
+        item.setText(_translate("MainWindow", "Название"))
         item = self.tableWidget_2.horizontalHeaderItem(1)
         item.setText(_translate("MainWindow", "Дата"))
         item = self.tableWidget_2.horizontalHeaderItem(2)
@@ -258,12 +265,12 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "Осталось"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Таблица дней рождений"))
         self.label_2.setText(_translate("MainWindow", " Выберите событие"))
-        self.pushButton_2.setText(_translate("MainWindow", "Отслеживать"))
         self.label_3.setText(_translate("MainWindow", "До наступления события: XX дней"))
         self.label_5.setText(_translate("MainWindow", "        Имя"))
         self.label_6.setText(_translate("MainWindow", "    Фамилия"))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_3), _translate("MainWindow", "День Рождения"))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_4), _translate("MainWindow", "Событие"))
+        self.pushButton_2.setText(_translate("MainWindow", "Отслеживать"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Календарь событий"))
 
 
