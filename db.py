@@ -1,5 +1,6 @@
 import sqlite3
-from datetime import datetime
+
+from PyQt5.QtSql import QSqlTableModel
 
 class DatabaseManager:
     def __init__(self, db_name='bday.db'):
@@ -13,43 +14,76 @@ class DatabaseManager:
                 name TEXT,
                 secname TEXT,
                 birthday DATE,
-                left INTEGER)
+                left INTEGER,
+                picture BLOB)
         """)
 
-    def create_tables_1(self):
-        # Создание таблицы с информацией о событиях
-        self.cur.execute('''
-            CREATE TABLE IF NOT EXISTS events 
-                (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Name TEXT,
-                date DATE,
-                left INTEGER
-            )
-        ''')
+    # def create_tables_1(self):
+    #     # Создание таблицы с информацией о событиях
+    #     self.cur.execute('''
+    #         CREATE TABLE IF NOT EXISTS events
+    #             (id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #             Name TEXT,
+    #             date DATE,
+    #             left INTEGER
+    #         )
+    #     ''')
 
         self.conn.commit()
+
+    # def add_birthday(self, name,opis,date,left,image):
+    #     # Вставка данных в базу данных
+    #     print(name,opis,date,left,image)
+    #     #self.cur.executemany("INSERT INTO birthdays (name, secname, birthday, left, picture) VALUES (?, ?, ?, ?, ?)", [(record[0],record[1],record[2],record[3], image) for record in data])
+    #     self.cur.executemany("INSERT INTO birthdays (name, secname, birthday, left, picture) VALUES (?, ?, ?, ?, ?)",
+    #                          [(name, opis,date,left,image)])
+    #     self.conn.commit()
 
     def add_birthday(self, data):
-        # Вставка данных в базу данных
-        self.cur.executemany("INSERT INTO birthdays (name, secname, birthday, left) VALUES (?, ?, ?, ?)", data)
+
+        for item in data:
+            if len(item) == 5 and item[4] is not None:
+                self.cur.execute('''
+                    INSERT INTO birthdays (name, secname, birthday, left, picture)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (*item[:4], item[4]))  # Используйте * для распаковки кортежа
+            else:
+                # Если бинарных данных для фотографии нет, вставляем данные без фотографии
+                self.cur.execute('''
+                    INSERT INTO birthdays (name, secname, birthday, left)
+                    VALUES (?, ?, ?, ?)
+                ''', (*item[:-1],))  # Используйте * для распаковки кортежа
+
         self.conn.commit()
+
+    def delete_birthday_by_id(self, birthday_id):
+        try:
+            self.cur.execute('DELETE FROM birthdays WHERE id = ?', (birthday_id,))
+            self.commit_connection()
+        except sqlite3.Error as error:
+            print(f"Error while deleting birthday by ID from the database: {error}")
+
+    def delete_data_by_row(self, row):
+        try:
+            birthday_id = self.get_birthday_id_by_row(row)
+            self.delete_birthday_by_id(birthday_id)
+        except sqlite3.Error as error:
+            print(f"Error while deleting data by row from the database: {error}")
+
+    def get_birthday_id_by_row(self, row):
+        try:
+            self.cur.execute('SELECT id FROM birthdays ORDER BY id LIMIT 1 OFFSET ?', (row,))
+            result = self.cur.fetchone()
+            if result:
+                return result[0]
+        except sqlite3.Error as error:
+            print(f"Error while getting birthday ID by row from the database: {error}")
 
     def fetch_data_from_database(self):
         try:
-            self.cur.execute('SELECT name, secname, birthday, Left bi FROM birthdays')
+            self.cur.execute('SELECT name, secname, birthday, Left, picture AS bi FROM birthdays')
             data = self.cur.fetchall()
-
             return data
-
-        except sqlite3.Error as error:
-            print(f"Error while fetching data from the database: {error}")
-
-    def fetch_data_from_database_1(self):
-        try:
-            self.cur.execute('SELECT name, date, left bi FROM events')
-            data1 = self.cur.fetchall()
-
-            return data1
 
         except sqlite3.Error as error:
             print(f"Error while fetching data from the database: {error}")
@@ -59,59 +93,4 @@ class DatabaseManager:
 
     def commit_connection(self):
         self.conn.commit()
-
-
-
-# import sqlite3
-#
-# from datetime import datetime
-#
-# # Подключение к базе данных SQLite
-# conn = sqlite3.connect('bday.db')
-# cur = conn.cursor()
-#
-#
-# # Создание таблицы с информацией о днях рождения
-# cur.execute("""
-#         CREATE TABLE IF NOT EXISTS birthdays
-#         (id INTEGER PRIMARY KEY AUTOINCREMENT,
-#         name TEXT,
-#         secname TEXT,
-#         birthday DATE)
-#     """)
-#
-#     # Создание таблицы с информацией о событиях
-# cur.execute('''
-#         CREATE TABLE IF NOT EXISTS events (
-#             id INTEGER PRIMARY KEY AUTOINCREMENT,
-#             Событие TEXT,
-#             Дата DATE,
-#             Дней осталось INTEGER
-#         )
-#     ''')
-#
-# # (first_name, last_name, birthday)
-# def add_birthday(peremenay):
-#     print(peremenay)
-#     # Вставка данных в базу данных
-#     cur.executemany("INSERT INTO birthdays (name, secname, birthday) VALUES (?, ?, ?)", peremenay)
-#     conn.commit()
-#
-
-# def add_event(description, event_date):
-#     # Рассчитываем количество дней до события
-#     # today = datetime.now().date()
-#     # e_date = datetime.strptime(event_date, '%Y-%m-%d').date()
-#     # days_left = (e_date - today).days
-#
-#     # Вставка данных в таблицу events
-#     conn = sqlite3.connect('birthdays.db')
-#     cur = conn.cursor()
-#     cur.execute('INSERT INTO events (description, event_date) VALUES (?, ?)',
-#                  (description, event_date))
-#     conn.commit()
-#     conn.close()
-
-# if __name__ == '__main__':
-#     create_tables()
 

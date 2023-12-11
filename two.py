@@ -1,5 +1,4 @@
 import traceback
-from PIL import Image
 from PyQt5 import QtWidgets
 from PyQt5.QtSql import QSqlTableModel
 from PyQt5.QtWidgets import QTableWidgetItem , QLabel, QFileDialog
@@ -8,7 +7,6 @@ from PyQt5.QtCore import QSettings, Qt, QByteArray
 from kalendar import Ui_MainWindow
 from db import DatabaseManager
 import sys
-import pickle
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -137,36 +135,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.ui.tableWidget.setItem(row_num, col_num, item)
 
             self.db_manager.conn.commit()
-
-    # def save_to_file(self):
-    #     data_to_save = {"start": self.start_date, "end": self.time_date, "desc": self.description,
-    #                     "Secname": self.description_1}
-    #     file1 = open(os.path.join("date.txt"), "wb")
-    #     pickle.dump(data_to_save, file1)
-    #     file1.close()
-
-    # def read_from_file(self):
-    #     try:
-    #         file1 = open(os.path.join("date.txt"), "rb")
-    #         data_to_load = pickle.load(file1)
-    #         file1.close()
-    #         self.start_date = data_to_load["start"]
-    #         self.time_date = data_to_load["end"]
-    #         self.description = data_to_load["desc"]
-    #         self.description_1 = data_to_load["Secname"]
-    #         print(self.start_date.toString('dd-MM-yyyy'), self.time_date.toString('dd-MM-yyyy'),
-    #                 self.description, self.description_1)
-    #         self.ui.calendarWidget.setSelectedDate(self.time_date)
-    #         self.ui.dateEdit.setDate(self.time_date)
-    #         self.ui.plainTextEdit.setPlainText(self.description)
-    #         delta_days_left = self.start_date.daysTo(self.now_date)  # прошло дней
-    #         delta_days_right = self.now_date.daysTo(self.time_date)  # осталось дней
-    #         days_total = self.start_date.daysTo(self.time_date)  # всего дней
-    #
-    #         procent = int(delta_days_left * 100 / days_total)
-    #         self.ui.progressBar.setProperty("value", procent)
-    #     except FileNotFoundError:
-    #         print("Нет файла")
 
     #Диалоговое окно для выбора изображения
     def browseImage(self):
